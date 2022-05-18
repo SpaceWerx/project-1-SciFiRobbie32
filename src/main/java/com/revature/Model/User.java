@@ -1,11 +1,12 @@
-package Model;
+package com.revature.Model;
 
-public class Users {
+public class User {
 	private int id;
 	private String userName;
 	private String password;
-	private Roles role;
-	public Users() {
+	private Role role;
+	
+	public User() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -27,13 +28,13 @@ public class Users {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Roles getRole() {
+	public Role getRole() {
 		return role;
 	}
-	public void setRole(Roles role) {
+	public void setRole(Role role) {
 		this.role = role;
 	}
-	public Users(int id, String userName, String password, Roles role) {
+	public User(int id, String userName, String password, Role role) {
 		super();
 		this.id = id;
 		this.userName = userName;
