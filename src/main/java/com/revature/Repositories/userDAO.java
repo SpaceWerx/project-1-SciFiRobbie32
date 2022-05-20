@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,14 +17,13 @@ public class userDAO {
 	
 	public static void insertUser(User newUser) throws SQLException {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			String sql = "insert into users (username, password, role) " + "values (?,?,?)";
+			String sql = "insert into users (username, password, role) " + "values (?,?,?,?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
 			ps.setLong(1, newUser.getId());
 			ps.setString(2, newUser.getUserName());
 			ps.setString(3, newUser.getPassword());
 			ps.setString(4, newUser.getRole().toString());
-			
 			ps.execute();
 			System.out.println("User: "+newUser.getUserName()+" Created!");
 		} catch(SQLException e) {
@@ -89,9 +89,9 @@ public class userDAO {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
 			ResultSet rs = null;
 			String sql = "select * from users;";
-			
-			PreparedStatement ps = conn.prepareStatement(sql);
-			rs = ps.executeQuery(sql);
+	
+			Statement s = conn.createStatement();
+			rs = s.executeQuery(sql);
 			List<User> getUsers = null;
 			User getUser = null;
 			while(rs.next()) {
@@ -124,38 +124,6 @@ public class userDAO {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			rs = ps.executeQuery(sql);
 			ps.setString(1, role.toString());
-			List<User> getUsers = null;
-			User getUser = null;
-			while(rs.next()) {
-				getUser.setId(rs.getInt("id"));
-				getUser.setUserName(rs.getString("username"));
-				getUser.setPassword(rs.getString("password"));
-				switch(rs.getString("role")) {
-				case "Manager":
-					getUser.setRole(Role.MANAGER);
-					break;
-				case "Employee:":
-					getUser.setRole(Role.EMPLOYEE);
-					break;
-				}
-				
-				getUsers.add(getUser);
-			}
-			
-			conn.close();
-			return getUsers;
-		} catch(SQLException e) {
-		}
-		return null;
-	}
-	public List<User> queryUserExistById(int id) {
-		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			ResultSet rs = null;
-			String sql = "select * from users where id = ?;";
-			
-			PreparedStatement ps = conn.prepareStatement(sql);
-			rs = ps.executeQuery(sql);
-			ps.setInt(1, id);
 			List<User> getUsers = null;
 			User getUser = null;
 			while(rs.next()) {

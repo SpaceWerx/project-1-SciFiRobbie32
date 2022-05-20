@@ -370,7 +370,7 @@ public class DriverClass {
 				} else System.out.println("Invalid, please try again.");
 			}
 			//make sure the login is valid
-			if (newAuth.login(username, password) != null) {
+			if (newAuth.login(username, password)) {
 				User user = userService.getUserByUsername(username);
 				handlePortal(user.getRole());
 			}

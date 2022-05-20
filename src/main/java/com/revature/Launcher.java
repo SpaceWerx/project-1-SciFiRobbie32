@@ -3,7 +3,9 @@ package com.revature;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.revature.Controller.AuthenticationController;
 import com.revature.Controller.UserHandler;
+import com.revature.Services.authorService;
 import com.revature.Utilities.ConnectionFactoryUtility;
 
 import io.javalin.Javalin;
@@ -28,6 +30,6 @@ public class Launcher {
 		//now for end points
 		app.get("/employee", ec.getUserHandler);
 		app.post("/employee", ec.insertUserHandler);
-		app.post("/login", null);
+		app.post("/login", AuthenticationController);
 	}
 }

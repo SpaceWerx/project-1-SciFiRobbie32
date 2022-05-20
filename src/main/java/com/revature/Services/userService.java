@@ -26,11 +26,11 @@ public class userService {
 		List<User> users = aDAO.getUsers();
 		return users;
 	}
-	public static List<User> queryUserExistById(int id) {
-		List<User> users = aDAO.queryUserExistById(id);
-		return users;
-	}
-	public void addUser(User user) throws SQLException{
+//	public static List<User> queryUserExistById(int id) {
+//		List<User> users = aDAO.queryUserExistById(id);
+//		return users;
+//	}
+	public static void addUser(User user) throws SQLException{
 		aDAO.insertUser(user);
 		
 	}

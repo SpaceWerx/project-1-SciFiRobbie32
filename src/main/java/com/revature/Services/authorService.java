@@ -13,24 +13,24 @@ public class authorService {
 		return userDAO.create(userToBeRegistered);
 	}
 	
-	public User login(String username, String password) {
+	public boolean login(String username, String password) {
 		User user;
 		try {
 			user = userDAO.getByUserName(username);
 			if(user != null && password.equals(user.getPassword())) {
-				return user;
+				return true;
 			} else if(user != null && !password.equals(user.getPassword())) {
 				System.out.println("Inncorrect Password");
-				return null;
+				return false;
 			} else {
 				System.out.println("User doesn't exist.");
-				return null;
+				return false;
 			}
 		} catch(Exception e) {
 			System.out.println("Login insuccessful.");
 			e.printStackTrace();
 		}
-		return null;
+		return false;
 	}
 
 }
