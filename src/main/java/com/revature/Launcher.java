@@ -20,8 +20,8 @@ public class Launcher {
 			e.printStackTrace();
 			
 		}
-		DriverClass menuLauncher = new DriverClass();
-		menuLauncher.displayLoginMenu();
+		//DriverClass menuLauncher = new DriverClass();
+		//menuLauncher.displayLoginMenu();
 		//javalin point paradox.
 		Javalin app = Javalin.create(
 		config -> {
@@ -30,6 +30,6 @@ public class Launcher {
 		//now for end points
 		app.get("/employee", ec.getUserHandler);
 		app.post("/employee", ec.insertUserHandler);
-		app.post("/login", AuthenticationController);
+		//app.post("/login", AuthenticationController);
 	}
 }

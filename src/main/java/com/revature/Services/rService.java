@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.revature.Model.Reimbursement;
 import com.revature.Model.Status;
+import com.revature.Repositories.ReimbursementDAO;
 
 public class rService {
+	static ReimbursementDAO rDAO = new ReimbursementDAO();
 	static List<Reimbursement> reimbursements;
 	public static void update(Reimbursement unprocessedReimbursement, int resolverId, Status updatedStatus) {
 		for(Reimbursement reimbursement : reimbursements) {

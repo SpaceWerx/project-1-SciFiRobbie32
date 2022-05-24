@@ -17,7 +17,7 @@ public class userDAO {
 	
 	public static void insertUser(User newUser) throws SQLException {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			String sql = "insert into users (username, password, role) " + "values (?,?,?,?)";
+			String sql = "insert into users (username, password, role) " + "values (?,?,?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
 			ps.setLong(1, newUser.getId());
