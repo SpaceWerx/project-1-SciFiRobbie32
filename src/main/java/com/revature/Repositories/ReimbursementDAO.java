@@ -31,11 +31,52 @@ public class ReimbursementDAO {
 		
 	}
 	public static Reimbursement getReimbursementById(int id) {
-		for(Reimbursement reimbursement : reimbursements) {
-			if(reimbursement.getId() ==  id) {
-				return reimbursement;
+		try(Connection conn = ConnectionFactoryUtility.getConnection()){
+			ResultSet rs = null;
+			String sql = "select * reimbursement where id="+id+";";
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			System.out.println("Reimbursement Succsesfully Requested!");
+			Status status = null;//set up for getting the enum status for the object creation below
+			switch(rs.getString("Status")) {
+			case "PENDING":
+				status = Status.PENDING;
+				break;
+			case "APPROVED":
+				status = Status.APPROVED;
+				break;
+			case "DENIED":
+				status = Status.DENIED;
+				break;
 			}
-			
+			Type type = null;//set up for getting the enum type for the object creation below
+			switch(rs.getString("Type")) {
+			case "FOOD":
+				type = Type.FOOD;
+				break;
+			case "LODGING":
+				type = Type.LODGING;
+				break;
+			case "TRAVEL":
+				type = Type.TRAVEL;
+				break;
+			case "OTHER":
+				type = Type.OTHER;
+				break;
+			}
+			Reimbursement ReimbursementById = new Reimbursement(
+					rs.getInt("id"),//used to get the result based off the database.
+					rs.getInt("author"),//used to get the result based off the database.
+					rs.getInt("resolver"),//used to get the result based off the database.
+					rs.getString("description"),//used to get the result based off the database.
+					type,
+					status,
+					rs.getLong("amount")//used to get the result based off the database.
+					);
+			return ReimbursementById;
+		} catch(SQLException e) {
+			System.out.println("An error occured while creating profile");
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -71,34 +112,34 @@ public class ReimbursementDAO {
 			ResultSet rs = null;
 			rs = st.executeQuery(sql);
 			List<Reimbursement> resolvedReimbursements = new ArrayList<>();
-			Status status = null;//set up for getting the enum status for the object creation below
-			switch(rs.getString("Status")) {
-			case "PENDING":
-				status = Status.PENDING;
-				break;
-			case "APPROVED":
-				status = Status.APPROVED;
-				break;
-			case "DENIED":
-				status = Status.DENIED;
-				break;
-			}
-			Type type = null;//set up for getting the enum type for the object creation below
-			switch(rs.getString("Type")) {
-			case "FOOD":
-				type = Type.FOOD;
-				break;
-			case "LODGING":
-				type = Type.LODGING;
-				break;
-			case "TRAVEL":
-				type = Type.TRAVEL;
-				break;
-			case "OTHER":
-				type = Type.OTHER;
-				break;
-			}
 			while(rs.next()) {
+				Status status = null;//set up for getting the enum status for the object creation below
+				switch(rs.getString("Status")) {
+				case "PENDING":
+					status = Status.PENDING;
+					break;
+				case "APPROVED":
+					status = Status.APPROVED;
+					break;
+				case "DENIED":
+					status = Status.DENIED;
+					break;
+				}
+				Type type = null;//set up for getting the enum type for the object creation below
+				switch(rs.getString("Type")) {
+				case "FOOD":
+					type = Type.FOOD;
+					break;
+				case "LODGING":
+					type = Type.LODGING;
+					break;
+				case "TRAVEL":
+					type = Type.TRAVEL;
+					break;
+				case "OTHER":
+					type = Type.OTHER;
+					break;
+				}
 				Reimbursement resolvedReimbursement = new Reimbursement(
 						rs.getInt("id"),//used to get the result based off the database.
 						rs.getInt("author"),//used to get the result based off the database.
@@ -119,23 +160,99 @@ public class ReimbursementDAO {
 		return null;
 	}
 	public static List<Reimbursement> getPendingReimbursement() {
-		List<Reimbursement> pendingReimbursement = new ArrayList<>();
-		for(Reimbursement reimbursement :reimbursements) {
-			if(reimbursement.getStatus() ==  Status.PENDING) {
-				pendingReimbursement.add(reimbursement);
+		try(Connection conn = ConnectionFactoryUtility.getConnection()){
+			ResultSet rs = null;
+			String sql = "select * reimbursement where status = PENDING;";
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			System.out.println("Reimbursement Succsesfully Requested!");
+			List<Reimbursement> pendingReimbursement = new ArrayList<>();
+			while(rs.next()) {
+				Type type = null;//set up for getting the enum type for the object creation below
+				switch(rs.getString("Type")) {
+				case "FOOD":
+					type = Type.FOOD;
+					break;
+				case "LODGING":
+					type = Type.LODGING;
+					break;
+				case "TRAVEL":
+					type = Type.TRAVEL;
+					break;
+				case "OTHER":
+					type = Type.OTHER;
+					break;
+				}
+				Reimbursement resolvedReimbursement = new Reimbursement(
+						rs.getInt("id"),//used to get the result based off the database.
+						rs.getInt("author"),//used to get the result based off the database.
+						rs.getInt("resolver"),//used to get the result based off the database.
+						rs.getString("description"),//used to get the result based off the database.
+						type,
+						Status.PENDING,
+						rs.getLong("amount")//used to get the result based off the database.
+						);
+				pendingReimbursement.add(resolvedReimbursement);
 			}
-			
+			return pendingReimbursement;
+		} catch(SQLException e) {
+			System.out.println("An error occured while creating profile");
+			e.printStackTrace();
 		}
-		return pendingReimbursement;
+		return null;
 	}
 	public static List<Reimbursement> getReimbursementsByAuthor(int userId) {
-		List<Reimbursement> userReimbursement = new ArrayList<>();
-		for(Reimbursement r :reimbursements) {
-			if(r.getAuthor() ==  userId || r.getResolver() == userId) {
-				userReimbursement.add(r);
+		try(Connection conn = ConnectionFactoryUtility.getConnection()){
+			ResultSet rs = null;
+			String sql = "select * reimbursement where author="+userId+";";
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			System.out.println("Reimbursement Succsesfully Requested!");
+			List<Reimbursement> userReimbursements = new ArrayList<>();
+			while(rs.next()) {
+				Status status = null;//set up for getting the enum status for the object creation below
+				switch(rs.getString("Status")) {
+				case "PENDING":
+					status = Status.PENDING;
+					break;
+				case "APPROVED":
+					status = Status.APPROVED;
+					break;
+				case "DENIED":
+					status = Status.DENIED;
+					break;
+				}
+				Type type = null;//set up for getting the enum type for the object creation below
+				switch(rs.getString("Type")) {
+				case "FOOD":
+					type = Type.FOOD;
+					break;
+				case "LODGING":
+					type = Type.LODGING;
+					break;
+				case "TRAVEL":
+					type = Type.TRAVEL;
+					break;
+				case "OTHER":
+					type = Type.OTHER;
+					break;
+				}
+				Reimbursement resolvedReimbursement = new Reimbursement(
+						rs.getInt("id"),//used to get the result based off the database.
+						rs.getInt("author"),//used to get the result based off the database.
+						rs.getInt("resolver"),//used to get the result based off the database.
+						rs.getString("description"),//used to get the result based off the database.
+						type,
+						status,
+						rs.getLong("amount")//used to get the result based off the database.
+						);
+				userReimbursements.add(resolvedReimbursement);
 			}
-			
+			return userReimbursements;
+		} catch(SQLException e) {
+			System.out.println("An error occured while creating profile");
+			e.printStackTrace();
 		}
-		return userReimbursement;
+		return null;
 	}
 }
