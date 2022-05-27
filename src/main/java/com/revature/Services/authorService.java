@@ -1,20 +1,19 @@
 package com.revature.Services;
 
-import java.util.List;
-
 import com.revature.Model.User;
 import com.revature.Repositories.userDAO;
 
 public class authorService {
 	public static boolean register(User userToBeRegistered) {
 		if(userDAO.getByUserName(userToBeRegistered.getUserName()) != null) {
-			throw new NullPointerException("Username is already taken");
+			System.out.println("Username is already taken");
+			return false;
 		}
 		return userDAO.create(userToBeRegistered);
 	}
 	
 	public boolean login(String username, String password) {
-		User user;
+		User user = null;
 		try {
 			user = userDAO.getByUserName(username);
 			if(user != null && password.equals(user.getPassword())) {

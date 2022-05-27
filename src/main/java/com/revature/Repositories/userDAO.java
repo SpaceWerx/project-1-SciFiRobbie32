@@ -17,14 +17,12 @@ public class userDAO {
 	
 	public static void insertUser(User newUser) throws SQLException {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			String sql = "insert into users (username, password, role) " + "values (?,?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			
-			ps.setLong(1, newUser.getId());
-			ps.setString(2, newUser.getUserName());
-			ps.setString(3, newUser.getPassword());
-			ps.setString(4, newUser.getRole().toString());
-			ps.execute();
+			String sql = "insert into users (username, password, role)"+" values (?,?,?);";
+			PreparedStatement ps = conn.prepareStatement(sql); 
+			ps.setString(1, newUser.getUserName());
+			ps.setString(2, newUser.getPassword());
+			ps.setString(3, newUser.getRole().toString());
+			ps.executeUpdate();
 			System.out.println("User: "+newUser.getUserName()+" Created!");
 		} catch(SQLException e) {
 			System.out.println("An error occured while creating profile");
@@ -37,14 +35,27 @@ public class userDAO {
 			String sql = "select * from users where id=?;";
 			
 			PreparedStatement ps = conn.prepareStatement(sql);
-			rs = ps.executeQuery(sql);
 			ps.setInt(1, id);
-			User getUser;
-			User user = new User();
-			rs.getInt("user stuff here");
-			getUser = user;
-			return getUser;
+			rs = ps.executeQuery();
+			Role role = null;
+			
+			User UserById = new User();
+			rs.next();
+			UserById.setId(rs.getInt("id"));
+			UserById.setUserName(rs.getString("username"));
+			UserById.setPassword(rs.getString("password"));
+			switch(rs.getString("role")) {
+			case "MANAGER":
+				role = Role.MANAGER;
+				break;
+			case "EMPLOYEE":
+				role = Role.EMPLOYEE;
+				break;
+			}
+			return UserById;
 		} catch(SQLException e) {
+			System.out.println("An error occured");
+			e.printStackTrace();
 		}
 		return null;
 		
@@ -62,26 +73,29 @@ public class userDAO {
 	public static User getByUserName(String userName) {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
 			ResultSet rs = null;
-			String sql = "select * from users where values (?)";
-			
+			String sql = "select * from users where username=?;";
 			PreparedStatement ps = conn.prepareStatement(sql);
-			rs = ps.executeQuery(sql);
-			User getUser = null;
 			ps.setString(1, userName);
-			getUser.setId(rs.getInt("id"));
-			getUser.setUserName(rs.getString("username"));
-			getUser.setPassword(rs.getString("password"));
+			rs = ps.executeQuery();
+			Role role = null;
+			
+			User getUserByName = new User();
+			rs.next();
+			getUserByName.setId(rs.getInt("id"));
+			getUserByName.setUserName(rs.getString("username"));
+			getUserByName.setPassword(rs.getString("password"));
 			switch(rs.getString("role")) {
-			case "Manager":
-				getUser.setRole(Role.MANAGER);
+			case "MANAGER":
+				role = Role.MANAGER;
 				break;
-			case "Employee:":
-				getUser.setRole(Role.EMPLOYEE);
+			case "EMPLOYEE":
+				role = Role.EMPLOYEE;
 				break;
 			}
-			conn.close();
-			return getUser;
+			getUserByName.setRole(role);
+			return getUserByName;
 		} catch(SQLException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -92,9 +106,9 @@ public class userDAO {
 	
 			Statement s = conn.createStatement();
 			rs = s.executeQuery(sql);
-			List<User> getUsers = null;
-			User getUser = null;
+			List<User> getUsers = new ArrayList<>();
 			while(rs.next()) {
+				User getUser = new User();
 				getUser.setId(rs.getInt("id"));
 				getUser.setUserName(rs.getString("username"));
 				getUser.setPassword(rs.getString("password"));
@@ -113,20 +127,23 @@ public class userDAO {
 			conn.close();
 			return getUsers;
 		} catch(SQLException e) {
+			System.out.println("An error occured");
+			e.printStackTrace();
 		}
 		return null;
 	}
+
 	public List<User> getByUserRole(Role role) {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			ResultSet rs = null;
-			String sql = "select * from users where role = ?;";
+			ResultSet rs = null;//initially set the result set
+			String sql = "select * from users where role = ?;";//prepare the sql statement
 			
-			PreparedStatement ps = conn.prepareStatement(sql);
-			rs = ps.executeQuery(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);//insert the prepared statement
 			ps.setString(1, role.toString());
-			List<User> getUsers = null;
-			User getUser = null;
+			rs = ps.executeQuery();//execute and get result
+			List<User> getUsers = new ArrayList<>();
 			while(rs.next()) {
+				User getUser = new User();
 				getUser.setId(rs.getInt("id"));
 				getUser.setUserName(rs.getString("username"));
 				getUser.setPassword(rs.getString("password"));
@@ -138,13 +155,15 @@ public class userDAO {
 					getUser.setRole(Role.EMPLOYEE);
 					break;
 				}
-				
 				getUsers.add(getUser);
+				
 			}
 			
 			conn.close();
 			return getUsers;
 		} catch(SQLException e) {
+			System.out.println("An error occured");
+			e.printStackTrace();
 		}
 		return null;
 	}

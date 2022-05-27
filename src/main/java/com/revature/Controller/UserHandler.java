@@ -27,5 +27,15 @@ public class UserHandler {
 		ctx.status(201);
 		
 	});
+	
+	public Handler login = (ctx ->{
+		String body = ctx.body();
+		Gson gson = new Gson();
+		User user = gson.fromJson(body, User.class);
+		es.getUserByUsername(user.getUserName());
+		ctx.result("User was created");
+		ctx.status(201);
+		
+	});
 
 }

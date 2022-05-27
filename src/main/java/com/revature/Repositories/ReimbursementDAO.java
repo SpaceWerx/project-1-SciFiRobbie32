@@ -10,11 +10,10 @@ import com.revature.Model.Type;
 import com.revature.Utilities.ConnectionFactoryUtility;
 
 public class ReimbursementDAO {
-	static List<Reimbursement> reimbursements;
 	public static void update(Reimbursement unprocessedReimbursement, int resolverId, Status updatedStatus) {
 		//The unprocessed Reimbursement is processed and sent to the database with an updated status along with the manager id.
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			String sql = "update reimbursement set (resolver, status) values (?,?) where id=?;";
+			String sql = "update reimbursements set resolver = ?, status = ? where id=?;";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			unprocessedReimbursement.setResolver(resolverId); //set the managers id assaigned as the resolver id
 			unprocessedReimbursement.setStatus(updatedStatus); //set the new status
@@ -22,20 +21,20 @@ public class ReimbursementDAO {
 			ps.setString(2, unprocessedReimbursement.getStatus().toString());//used to fill the ? each int indicating which ? to fill.
 			ps.setLong(3, unprocessedReimbursement.getId());//used to fill the ? each int indicating which ? to fill.
 			ps.execute();//execute order 66- er i mean execute the sql code now that it has the ? populated.
-			System.out.println("User reimbursement Submitted!");
+			System.out.println("User reimbursement Updated!");
 		} catch(SQLException e) {
-			System.out.println("An error occured while creating profile");
+			System.out.println("An error occured while Updating");
 			e.printStackTrace();
 		}
-		throw new RuntimeException("There was an error processing this reimbursement, please try again;");
 		
 	}
 	public static Reimbursement getReimbursementById(int id) {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
 			ResultSet rs = null;
-			String sql = "select * reimbursement where id="+id+";";
+			String sql = "select * from reimbursements where id="+id+";";
 			Statement st = conn.createStatement();
 			rs = st.executeQuery(sql);
+			rs.next();
 			System.out.println("Reimbursement Succsesfully Requested!");
 			Status status = null;//set up for getting the enum status for the object creation below
 			switch(rs.getString("Status")) {
@@ -71,32 +70,28 @@ public class ReimbursementDAO {
 					rs.getString("description"),//used to get the result based off the database.
 					type,
 					status,
-					rs.getLong("amount")//used to get the result based off the database.
+					rs.getDouble("amount")//used to get the result based off the database.
 					);
 			return ReimbursementById;
 		} catch(SQLException e) {
-			System.out.println("An error occured while creating profile");
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public static void sumbmitReimbursement(Reimbursement reimbursementToBeSubmitted) {
-		
-		Reimbursement latestReimbursement = reimbursements.get(reimbursements.size()-1);
-		int id = latestReimbursement.getId()+1;
-		reimbursementToBeSubmitted.setId(id);
-		reimbursementToBeSubmitted.setStatus(Status.PENDING);
-		reimbursements.add(reimbursementToBeSubmitted);
+	public static void ReimbursementToBeSubmitted(Reimbursement reimbursementToBeSubmitted) {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
-			String sql = "insert into reimbursement (id, author, resolver, description, type, status) values (?,?,?,?,?,?);";
+			String sql = "insert into reimbursements (author, description, type, status, amount) values (?,?,?,?,?);";
 			PreparedStatement ps = conn.prepareStatement(sql);
-			
-			ps.setLong(1, reimbursementToBeSubmitted.getId());//used to fill the ? each int indicating which ? to fill.
-			ps.setLong(2, reimbursementToBeSubmitted.getAuthor());//used to fill the ? each int indicating which ? to fill.
-			ps.setLong(3, reimbursementToBeSubmitted.getResolver());//used to fill the ? each int indicating which ? to fill.
-			ps.setString(4, reimbursementToBeSubmitted.getDescription());//used to fill the ? each int indicating which ? to fill.
-			ps.setString(5, reimbursementToBeSubmitted.getType().toString());//used to fill the ? each int indicating which ? to fill.
-			ps.setString(6, reimbursementToBeSubmitted.getStatus().toString());//used to fill the ? each int indicating which ? to fill.
+			ps.setLong(1, reimbursementToBeSubmitted.getAuthor());//used to fill the ? each int indicating which ? to fill.
+			ps.setString(2, reimbursementToBeSubmitted.getDescription());//used to fill the ? each int indicating which ? to fill.
+			ps.setString(3, reimbursementToBeSubmitted.getType().toString());//used to fill the ? each int indicating which ? to fill.
+			ps.setString(4, "PENDING");//used to fill the ? each int indicating which ? to fill.
+//			double val = reimbursementToBeSubmitted.getAmount();
+//		    String[] ar=String.valueOf(val).split("\\.");
+//			int dollars = Integer.parseInt(ar[0]);
+//			int cents = Integer.parseInt(ar[1]);
+//			String fullAMT = dollars+"."+cents;
+			ps.setDouble(5, reimbursementToBeSubmitted.getAmount());//used to fill the ? each int indicating which ? to fill.
 			ps.execute();
 			System.out.println("User reimbursement Submitted!");
 		} catch(SQLException e) {
@@ -107,7 +102,7 @@ public class ReimbursementDAO {
 	}
 	public static List<Reimbursement> getResolvedReimbursements() {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){			
-			String sql = "select * from reimbursement where status = resolved;";	
+			String sql = "select * from reimbursements where status != 'PENDING';";	
 			Statement st = conn.createStatement();	
 			ResultSet rs = null;
 			rs = st.executeQuery(sql);
@@ -147,22 +142,19 @@ public class ReimbursementDAO {
 						rs.getString("description"),//used to get the result based off the database.
 						type,
 						status,
-						rs.getLong("amount")//used to get the result based off the database.
+						rs.getDouble("amount")//used to get the result based off the database.
 						);
 				resolvedReimbursements.add(resolvedReimbursement);
 			}
-			System.out.println("User reimbursement Submitted!");
 			return resolvedReimbursements;
 		} catch(SQLException e) {
-			System.out.println("An error occured while creating profile");
-			e.printStackTrace();
 		}
 		return null;
 	}
 	public static List<Reimbursement> getPendingReimbursement() {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
 			ResultSet rs = null;
-			String sql = "select * reimbursement where status = PENDING;";
+			String sql = "select * from reimbursements where status = 'PENDING';";
 			Statement st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			System.out.println("Reimbursement Succsesfully Requested!");
@@ -190,21 +182,19 @@ public class ReimbursementDAO {
 						rs.getString("description"),//used to get the result based off the database.
 						type,
 						Status.PENDING,
-						rs.getLong("amount")//used to get the result based off the database.
+						rs.getDouble("amount")//used to get the result based off the database.
 						);
 				pendingReimbursement.add(resolvedReimbursement);
 			}
 			return pendingReimbursement;
 		} catch(SQLException e) {
-			System.out.println("An error occured while creating profile");
-			e.printStackTrace();
 		}
 		return null;
 	}
 	public static List<Reimbursement> getReimbursementsByAuthor(int userId) {
 		try(Connection conn = ConnectionFactoryUtility.getConnection()){
 			ResultSet rs = null;
-			String sql = "select * reimbursement where author="+userId+";";
+			String sql = "select * from reimbursements where author="+userId+";";
 			Statement st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			System.out.println("Reimbursement Succsesfully Requested!");
@@ -244,14 +234,12 @@ public class ReimbursementDAO {
 						rs.getString("description"),//used to get the result based off the database.
 						type,
 						status,
-						rs.getLong("amount")//used to get the result based off the database.
+						rs.getDouble("amount")//used to get the result based off the database.
 						);
 				userReimbursements.add(resolvedReimbursement);
 			}
 			return userReimbursements;
 		} catch(SQLException e) {
-			System.out.println("An error occured while creating profile");
-			e.printStackTrace();
 		}
 		return null;
 	}

@@ -8,6 +8,7 @@ import com.revature.Model.Role;
 import com.revature.Model.Status;
 import com.revature.Model.Type;
 import com.revature.Model.User;
+import com.revature.Repositories.userDAO;
 import com.revature.Services.authorService;
 import com.revature.Services.rService;
 import com.revature.Services.userService;
@@ -66,7 +67,7 @@ public class DriverClass {
 				}
 			}
 		}
-		rService.sumbmitReimbursement(reimbursementToBeSubmitted);
+		rService.submitReimbursement(reimbursementToBeSubmitted);
 	}
 	
 	public void processReimbursement(User manager) {
@@ -199,7 +200,15 @@ public class DriverClass {
 			System.out.println("Returning to Previous Menu...");
 		}
 		for(Reimbursement r: pendingReimbursements) {
-			System.out.println(r);
+			System.out.println("---------------------------------------------------------------"); 
+			System.out.println("REIMBURSEMENT ID: "+r.getId());
+			System.out.println("AUTHOR ID: "+r.getAuthor());
+			System.out.println("RESOLVER ID: "+r.getResolver());
+			System.out.println("DESCRIPTION: "+r.getDescription());
+			System.out.println("TYPE: "+r.getType());
+			System.out.println("STATUS: "+r.getStatus());
+			System.out.println("$"+r.getAmount());
+			System.out.println("---------------------------------------------------------------"); 
 		}
 	}
 	
@@ -210,18 +219,33 @@ public class DriverClass {
 			System.out.println("Returning to Previous Menu...");
 		}
 		for(Reimbursement r: resolvedReimbursements) {
-			System.out.println(r);
+			System.out.println("---------------------------------------------------------------"); 
+			System.out.println("REIMBURSEMENT ID: "+r.getId());
+			System.out.println("AUTHOR ID: "+r.getAuthor());
+			System.out.println("RESOLVER ID: "+r.getResolver());
+			System.out.println("DESCRIPTION: "+r.getDescription());
+			System.out.println("TYPE: "+r.getType());
+			System.out.println("STATUS: "+r.getStatus());
+			System.out.println("$"+r.getAmount());
+			System.out.println("---------------------------------------------------------------"); 
 		}
 	}
 	
 	public void displayPreviousRequests(User employee) {
-		List<Reimbursement> reimbursement = rService.getReimbursementsByAuthor(employee.getId());
-		if(reimbursement.isEmpty()) {
+		List<Reimbursement> reimbursements = rService.getReimbursementsByAuthor(employee.getId());
+		if(reimbursements.isEmpty()) {
 			System.out.println("No Previous Reimbursements...");
 			System.out.println("Returning to Previous Menu...");
 		}
-		for(Reimbursement r: reimbursement) {
-			System.out.println(r);
+		for(Reimbursement r: reimbursements) {
+			System.out.println("---------------------------------------------------------------"); 
+			System.out.println("REIMBURSEMENT ID: "+r.getId());
+			System.out.println("RESOLVER ID: "+r.getResolver());
+			System.out.println("DESCRIPTION: "+r.getDescription());
+			System.out.println("TYPE: "+r.getType());
+			System.out.println("STATUS: "+r.getStatus());
+			System.out.println("$"+r.getAmount());
+			System.out.println("---------------------------------------------------------------"); 
 		}
 	}
 	
@@ -265,7 +289,7 @@ public class DriverClass {
 			System.out.println("2 -> View All Resolved Reimbursements");
 			System.out.println("3 -> Process a Reimbursements");
 			System.out.println("0 -> Return to Main Menu");
-			int firstChoice = promptSelection(1,2,0);
+			int firstChoice = promptSelection(1,2,3,0);
 			
 			switch(firstChoice) {
 			case 1:
@@ -327,15 +351,12 @@ public class DriverClass {
 			int userChoice = promptSelection(1,2,0);
 			switch(userChoice) {
 			case 1:
-				login = false;
 				login();
 				break;
 			case 2:
-				login = false;
 				register();
 				break;
 			case 0:
-				login = false;
 				System.exit(0);
 				break;
 			}
@@ -348,8 +369,6 @@ public class DriverClass {
 		String
 		username = "",
 		password = "";
-		boolean loop = true;
-		while(loop) {
 			boolean valid = false;
 			System.out.println("Please enter your Username");
 			//loop for a valid username
@@ -370,19 +389,20 @@ public class DriverClass {
 				} else System.out.println("Invalid, please try again.");
 			}
 			//make sure the login is valid
-			if (newAuth.login(username, password)) {
-				User user = userService.getUserByUsername(username);
-				handlePortal(user.getRole());
+			if(newAuth.login(username, password)) {
+				User user = userDAO.getByUserName(username);
+				if(user.getRole().toString() == "MANAGER") {displayFinanceManagerMenu(user);}
+				else displayEmployeeMenu(user);
+			} else {
+				System.out.println("An error occured while setting up. Returning to the login menu");
 			}
-		}
+			
 	}
 	
 	private void register() {
 		User newUser = new User();
-		while(true) {
 			boolean valid = false;
 			System.out.println("Please enter your Username");
-			System.out.println("Hit esc to return");
 			//loop for a valid username
 			while(!valid) {
 				newUser.setUserName(scan.nextLine().toString());
@@ -400,10 +420,31 @@ public class DriverClass {
 					valid = true;
 				} else System.out.println("Invalid, please try again.");
 			}
-			if(authorService.register(newUser)) {
-				System.out.println("Congradulations! You've succesfully registered.");
-				handlePortal(newUser.getRole());
+			valid = false;//reset boolean to false for next loop
+			System.out.println("Please enter your Role");
+			System.out.println("1 -> Employee");
+			System.out.println("2 -> Manager");
+			Role role = null;
+			//loop for valid password
+			while(!valid) {
+				switch(Integer.parseInt(scan.nextLine())) {
+				case 1:
+					role = Role.EMPLOYEE;
+					break;
+				case 2:
+					role = Role.MANAGER;
+					break;
+				}
+				newUser.setRole(role);
+				if(!newUser.getPassword().trim().equals("")) {
+					valid = true;
+				} else System.out.println("Invalid, please try again.");
 			}
-		}
+			if(authorService.register(newUser)) {
+				if(newUser.getRole().toString() == "MANAGER") {displayFinanceManagerMenu(newUser);}
+				else displayEmployeeMenu(newUser);
+			} else {
+				System.out.println("An error occured while setting up. Returning to the login menu");
+			}
 	}
 }
