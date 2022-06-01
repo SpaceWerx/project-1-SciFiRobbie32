@@ -11,11 +11,14 @@ import com.revature.Model.User;
 import com.revature.Repositories.userDAO;
 import com.revature.Services.authorService;
 import com.revature.Services.rService;
-import com.revature.Services.userService;
+
+import io.javalin.Javalin;
+import io.javalin.core.JavalinConfig;
+
+import com.revature.Services.UserService;
 
 public class DriverClass {
 	private Scanner scan = new Scanner(System.in);
-	
 	
 	public void submitReimbursement(User employee) {	
 		Reimbursement reimbursementToBeSubmitted = new Reimbursement();
@@ -87,7 +90,7 @@ public class DriverClass {
 			int[] ids = new int[reimbursement.size()];
 			for(int i=0;i<reimbursement.size();i++) {
 				Reimbursement r = reimbursement.get(i);
-				User author = userService.getUserById(r.getAuthor());
+				User author = UserService.getUserById(r.getAuthor());
 				System.out.println(r.getId()+" -> "+author.getUserName()+" :$"+r.getAmount());
 				ids[i] = r.getId();
 				
@@ -97,7 +100,7 @@ public class DriverClass {
 			Reimbursement reimbursementToBeProcessed = rService.getReimbursementById(selection);
 			System.out.println("Processing reimbursement #"+reimbursementToBeProcessed.getId());
 			System.out.println("Details\nAuthor: "
-				+ userService.getUserById(reimbursementToBeProcessed.getAuthor()).getUserName()
+				+ UserService.getUserById(reimbursementToBeProcessed.getAuthor()).getUserName()
 				+"\nAmount: " +reimbursementToBeProcessed.getAmount()
 				+"\nDescription: " +reimbursementToBeProcessed.getDescription()
 			);
@@ -122,7 +125,7 @@ public class DriverClass {
 	}
 	
 	public void handlePortal(Role role) {
-		List<User> users = userService.getUserByRole(role);
+		List<User> users = UserService.getUserByRole(role);
 		int[] ids = new int[users.size() + 1];
 		ids[users.size()] = 0;
 		for(int i=0;i<users.size();i++) {
@@ -140,7 +143,7 @@ public class DriverClass {
 		if (userChoice == 0) {
 			return;
 		}
-		User employee = userService.getUserById(userChoice);
+		User employee = UserService.getUserById(userChoice);
 		if(role == Role.MANAGER) {
 			System.out.println("Opening Manager Portal for "+employee.getUserName());
 			displayFinanceManagerMenu(employee);

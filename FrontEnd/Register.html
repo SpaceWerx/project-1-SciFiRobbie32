@@ -10,11 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login or Sign-Up</title>
     </head>
-    
     <body style="background-color: rgb(46, 46, 46);">
+        </div>
         <div class="Container">
-            <script src="includeHTML.js"></script>
-            <div w3-include-html="Navbar.html"></div>
             <div>
                 <div id="loginRow" class="row">
                     <center>
@@ -22,17 +20,18 @@
                     <h3> Please Login</h3><br>
                     <forum>
                     <input id="username" placeholder="Username"><br><br>
-                    <input id="Password" type="password" placeholder="Password"><br><br>
-                    <button id="loginButton" class="btn btn-primary col-sm-4">Login</button><br>
+                    <input id="password" type="password" placeholder="Password"><br><br>
+                    <select id="role" type="role" aria-placeholder="role">
+                        <option value="EMPLOYEE">|-------  Employee  -------|</option>
+                        <option value="MANAGER"> |-------   Manager  -------|</option>
+                    </select><br><br>
+                    <button id="loginButton" class="btn btn-primary col-sm-4">Register</button><br>
                     </forum><br>
-                    <p>Or Register</p>
-                    <a href="Register.html">
-                    <button id="registerButton" class="btn btn-primary col-sm-4">Register</button>
-                    </a><br>
+                    <p>Or Return</p>
+                        <button id="back" class="btn btn-primary col-sm-4" onclick="history.back()">Back</button><br>
                     </center>
                 </div>
             </div>
         </div>
         <script src="userin.js"></script>
     </body>
-</html>

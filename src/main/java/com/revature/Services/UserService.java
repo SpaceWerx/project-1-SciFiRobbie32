@@ -8,7 +8,7 @@ import com.revature.Model.Role;
 import com.revature.Model.User;
 import com.revature.Repositories.userDAO;
 
-public class userService {
+public class UserService {
 	static userDAO aDAO = new userDAO();
 	public static User getUserById(int author) {
 		User users = aDAO.getUserById(author);

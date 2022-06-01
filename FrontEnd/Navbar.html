@@ -1,0 +1,141 @@
+<style> 
+#nav-bar {
+	background-color:#A77B7B;
+}
+/*Highlights current page nav-button*/
+#nav-bar li a.active {
+  color: black;
+  font-size: 17px;
+  border: white solid 2px;
+  background-color: #FAA41A; /*Yellow Gold*/
+}
+
+.logo {
+  display: inline;
+  float: left;
+  padding-left: 10px;
+  padding-top: 2px;
+  width: auto;
+  width: 110px;
+  height: 40px;
+}
+#date{
+  display: inline;
+  float: left;
+  padding-left: 10px;
+  padding-top: 2px;
+  width: auto;
+  width: 110px;
+  height: 40px;
+}
+
+#nav-bar ul{
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+#nav-bar li{
+  display: inline;
+  text-decoration: none;
+  width: 100px;
+  padding-right: 7px;
+  float: right;
+}
+
+#nav-bar li a {
+  font-size: 15px;
+  display: block;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+}
+
+#nav-bar a {
+  text-decoration: none;
+  text-align: center;
+}
+
+#nav-bar a:hover {
+  color: black;
+  background-color: #FAA41A; /*Yellow Gold*/
+  }
+  @media only screen and (min-width: 905px) {
+	  .dropbtn {
+		display: none;
+	  }
+	  #nav-bar-links a:hover {
+	  font-size: 17px;
+	  border: white solid 1px;
+	  }
+  }
+  @media only screen and (max-width: 905px) {
+  
+	.dropdown {
+	  overflow: hidden;
+	}
+
+	.dropdown .dropbtn {
+	  font-size: 16px;  
+	  border: none;
+	  outline: none;
+	  padding: 14px 16px;
+	  margin: 0;
+	  background-color: #FAA41A; /*Yellow Gold*/
+	  color: white;
+	}
+	.dropdown-content {
+	  display: none;
+	  position: absolute;
+	  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	  z-index: 1;
+	}
+
+	.dropdown-content a {
+	  float: none;
+	  padding: 12px 16px;
+	  text-decoration: none;
+	  display: block;
+	}
+
+	.dropdown-content a:hover {
+	  background-color:#840029;
+	}
+
+	.dropdown:hover .dropdown-content {
+	  display: block;
+	  background-color: #840029;
+	  border: black solid 1px;
+	}
+	#nav-bar li{
+		
+	}
+	#home {
+	display: inline-block;
+	}
+  }
+</style>
+
+<div id="nav-bar">
+	<!--Company Logo Image-->
+	<a href="index.php"><img class = "logo" src="images/logo.png" alt = "logo"/></a>
+	<div id="date"> <?php echo date("m.d.y") ; ?> </div>
+	<ul id="nav-bar-links">
+		<div class="dropdown">
+			<button class="dropbtn">Navigation
+			  <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">Events</a></li>
+				<li><a href="Races.php">Races</a></li>
+				<li><a href="Create.php">Create</a></li>
+				<li><a href="Character.php">Characters</a></li>
+				<li><a href="Dice.php">Dice Roll</a></li>
+				<li id="home"><a class="active" href="index.php">Home</a></li>
+			</div><!--End DropdownContent-->
+		</div><!--End Dropdown-->
+	</ul>
+</div><!--End of nav-bar-->

@@ -4,13 +4,15 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.revature.Model.User;
-import com.revature.Services.userService;
+import com.revature.Services.UserService;
 
 import io.javalin.http.Handler;
 
 public class UserHandler {
-	userService es = new userService();
-	public Handler getUserHandler = (ctx ->{
+	
+	UserService es = new UserService();
+	
+	public Handler getAllUsers = (ctx ->{
 		List<User> allEmployees = es.getAllUsers();
 		Gson gson = new Gson();
 		String JSONObject = gson.toJson(allEmployees);
@@ -23,7 +25,8 @@ public class UserHandler {
 		Gson gson = new Gson();
 		User user = gson.fromJson(body, User.class);
 		es.addUser(user);
-		ctx.result("User was created");
+		String pmDebug = user.getId()+" "+user.getUserName()+" "+user.getPassword()+" "+user.getRole();
+		ctx.result(pmDebug);
 		ctx.status(201);
 		
 	});
@@ -33,7 +36,7 @@ public class UserHandler {
 		Gson gson = new Gson();
 		User user = gson.fromJson(body, User.class);
 		es.getUserByUsername(user.getUserName());
-		ctx.result("User was created");
+		ctx.result("Login Successful");
 		ctx.status(201);
 		
 	});

@@ -1,17 +1,20 @@
 package com.revature.Services;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
 import com.revature.Model.Reimbursement;
+import com.revature.Model.Role;
 import com.revature.Model.Status;
+import com.revature.Model.User;
 import com.revature.Repositories.ReimbursementDAO;
 
 public class rService {
 	static ReimbursementDAO rDAO = new ReimbursementDAO();
+	static UserService userService = new UserService();
 	static List<Reimbursement> reimbursements;
 	public static void update(Reimbursement unprocessedReimbursement, int resolverId, Status updatedStatus) {
 		rDAO.update(unprocessedReimbursement, resolverId, updatedStatus);
+		
 		
 	}
 	public static Reimbursement getReimbursementById(int id) {

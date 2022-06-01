@@ -243,4 +243,56 @@ public class ReimbursementDAO {
 		}
 		return null;
 	}
+	public static List<Reimbursement> getAllReimbursements() {
+		try(Connection conn = ConnectionFactoryUtility.getConnection()){
+			ResultSet rs = null;
+			String sql = "select * from reimbursements;";
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			System.out.println("Reimbursement Succsesfully Requested!");
+			List<Reimbursement> userReimbursements = new ArrayList<>();
+			while(rs.next()) {
+				Status status = null;//set up for getting the enum status for the object creation below
+				switch(rs.getString("Status")) {
+				case "PENDING":
+					status = Status.PENDING;
+					break;
+				case "APPROVED":
+					status = Status.APPROVED;
+					break;
+				case "DENIED":
+					status = Status.DENIED;
+					break;
+				}
+				Type type = null;//set up for getting the enum type for the object creation below
+				switch(rs.getString("Type")) {
+				case "FOOD":
+					type = Type.FOOD;
+					break;
+				case "LODGING":
+					type = Type.LODGING;
+					break;
+				case "TRAVEL":
+					type = Type.TRAVEL;
+					break;
+				case "OTHER":
+					type = Type.OTHER;
+					break;
+				}
+				Reimbursement resolvedReimbursement = new Reimbursement(
+						rs.getInt("id"),//used to get the result based off the database.
+						rs.getInt("author"),//used to get the result based off the database.
+						rs.getInt("resolver"),//used to get the result based off the database.
+						rs.getString("description"),//used to get the result based off the database.
+						type,
+						status,
+						rs.getDouble("amount")//used to get the result based off the database.
+						);
+				userReimbursements.add(resolvedReimbursement);
+			}
+			return userReimbursements;
+		} catch(SQLException e) {
+		}
+		return null;
+	}
 }
