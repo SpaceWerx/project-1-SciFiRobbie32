@@ -7,18 +7,16 @@ Application to allow users to sign in and submit reimbursements while allowing m
 
 ## Technologies Used
 
-* Java SE Development Kit 8
-* Spring Tool Suite 4
 * Javalin
-* AWS RDS
-* DBeaver
-* Postman
-* PostrgreSQL
-* html
+* Java
+* HTML
+* CSS
 * Bootstrap
-* javascript
-* Apache Maven
-* VSCode
+* JDBC
+* AWS RDS
+* JavaScript
+* PostgreSQL
+* Postman
 
 ## Features
 
